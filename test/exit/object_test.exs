@@ -1,9 +1,9 @@
 defmodule Exit.ObjectTest do
   use ExUnit.Case, async: true
-  # test "header" do
-  #   header = Exit.Object.header("test content")
-  #   assert
-  # end
+  test "header" do
+    header = Exit.Object.header("test content", "blob")
+    assert header = "blob 16\0test content"
+  end
 
   test "it hashes a file with SHA-2" do
     hash = Exit.Object.hash("test content")
