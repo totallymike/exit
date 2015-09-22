@@ -7,16 +7,18 @@ defmodule Exit do
     setup_git_directories(path)
     File.cd!(Path.join([path, ".git"]), fn() ->
       File.open! "HEAD", [:write], fn(file) ->
-        IO.write(file, "refs/heads/master")
+        IO.write(file, "ref: refs/heads/master")
       end
 
       File.open! "config", [:write], fn(file) ->
         IO.write file, """
 [core]
-\tcore.repositoryformatversion=0
-\tcore.filemode=true
-\tcore.bare=false
-\tcore.logallrefupdates=true
+\trepositoryformatversion = 0
+\tfilemode = true
+\tbare = false
+\tlogallrefupdates = true
+\tignorecase = true
+\tprecomposeunicode = true
 """
       end
 
