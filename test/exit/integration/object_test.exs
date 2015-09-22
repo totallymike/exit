@@ -1,15 +1,5 @@
 defmodule Exit.Integration.ObjectTest do
   use ExitIntegrationTest.Case
-  # test "header" do
-  #   header = Exit.Object.header("test content")
-  #   assert
-  # end
-
-  test "it hashes a file with SHA-2" do
-    hash = Exit.Object.hash("test content")
-    assert hash == "08cf6101416f0ce0dda3c80e627f333854c4085c"
-  end
-
   test "it writes the blob to a file" do
     Exit.init
     {:ok, id} = Exit.Object.hash_w("test content")
