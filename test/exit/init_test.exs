@@ -46,7 +46,7 @@ defmodule Exit.InitTest do
     end)
     |> List.flatten
     |> Enum.filter(fn(path) ->
-      !String.match?(path, ~r/sample/)
+      !String.match?(path, ~r/sample|branches/)
     end)
     |> Enum.sort
   end
