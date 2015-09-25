@@ -1,20 +1,31 @@
 defmodule Exit.Object do
-  def hash(content, content_type \\ "blob") do
-    blob = store(content, content_type)
+  defstruct id: nil, type: nil, size: nil, contents: nil
+  @type t :: %__MODULE__{id: binary, type: binary, size: integer, contents: any}
+
+  @spec from_binary(binary) :: __MODULE__.t
+  def from_binary(bin) do
+    [type_and_size, contents] = String.split(bin, <<0>>, parts: 2)
+    [type, size] = String.split(type_and_size, " ")
+    object = %__MODULE__{type: type, size: size, contents: contents}
+    %__MODULE__{object | id: hash(contents, type)}
+  end
+
+  def hash(content, type \\ "blob") do
+    blob = store(content, type)
 
     :crypto.hash(:sha, blob)
     |> Base.encode16(case: :lower)
   end
 
-  def header(content, content_type) do
-    "#{content_type} #{content_size(content)}\0"
+  def header(content, type) do
+    "#{type} #{content_size(content)}" <> <<0>>
   end
 
-  def store(content, content_type) do
-    "#{content_type} #{content_size(content)}\0" <> content
+  def store(content, type) do
+    "#{type} #{content_size(content)}" <> <<0>> <> content
   end
 
-  def hash_w(content) do
+  def hash_w(content, type) do
     id = hash(content)
     {folder, filename} = String.split_at(id, 2)
     File.mkdir_p! ".git/objects/#{folder}"
@@ -26,6 +37,6 @@ defmodule Exit.Object do
   end
 
   defp content_size(content) do
-    "#{Kernel.byte_size(content)}"
+    Kernel.byte_size(content)
   end
 end
