@@ -1,6 +1,8 @@
 defmodule Exit.Object do
   defstruct id: nil, type: nil, size: nil, contents: nil
+  @type t :: %__MODULE__{id: binary, type: binary, size: integer, contents: any}
 
+  @spec from_binary(binary) :: __MODULE__.t
   def from_binary(bin) do
     [type_and_size, contents] = String.split(bin, <<0>>, parts: 2)
     [type, size] = String.split(type_and_size, " ")
@@ -16,11 +18,11 @@ defmodule Exit.Object do
   end
 
   def header(content, type) do
-    "#{type} #{content_size(content)}\0"
+    "#{type} #{content_size(content)}" <> <<0>>
   end
 
   def store(content, type) do
-    "#{type} #{content_size(content)}\0" <> content
+    "#{type} #{content_size(content)}" <> <<0>> <> content
   end
 
   def hash_w(content, type) do
@@ -35,6 +37,6 @@ defmodule Exit.Object do
   end
 
   defp content_size(content) do
-    "#{Kernel.byte_size(content)}"
+    Kernel.byte_size(content)
   end
 end
