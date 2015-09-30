@@ -17,6 +17,11 @@ build:
     # http://devcenter.wercker.com/docs/steps/index.html
   steps:
     - script:
+        name: git config
+        code: |
+          git config --global user.email "michael@agilion.com"
+          git config --global user.name "Michael Westbom"
+    - script:
         name: mix test
         code: |
           export TMPDIR=/tmp
