@@ -1,5 +1,8 @@
 defmodule Exit.Integration.ObjectTest do
-  use ExitIntegrationTest.Case
+  # use ExitIntegrationTest.Case
+  use ExUnit.Case
+
+  @tag skip: "Meh"
   test "it writes the blob to a file" do
     Exit.init
     {:ok, id} = Exit.ObjectDB.add("test content", "blob")

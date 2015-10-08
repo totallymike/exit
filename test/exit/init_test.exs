@@ -4,12 +4,14 @@ defmodule Exit.InitTest do
   alias File
 
   setup_all do
+    current_dir = File.cwd!
     File.cd! System.tmp_dir
 
     on_exit fn ->
       File.cd! System.tmp_dir
       File.rm_rf "git_test"
       File.rm_rf "exit_test"
+      File.cd! current_dir
     end
   end
 

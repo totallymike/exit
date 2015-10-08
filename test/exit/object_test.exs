@@ -1,5 +1,5 @@
 defmodule Exit.ObjectTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case
   test "header" do
     header = Exit.Object.header("test content", "blob")
     assert header = "blob 16\0test content"

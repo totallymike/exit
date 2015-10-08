@@ -2,6 +2,13 @@ defmodule Exit.Tree do
   defstruct id: nil, size: nil, contents: %{}
   @type t :: %__MODULE__{id: binary, size: integer, contents: %{binary => Exit.TreeEntry.t}}
 
+  @spec lookup!(Exit.Repo.t, binary) :: {atom, Exit.Tree.t}
+  def lookup!(repo, id) do
+    File.cd!(repo.path, fn() ->
+      read!(id)
+    end)
+  end
+
   @spec add_blob(Exit.Tree.t, binary, binary, binary) :: {:ok, Exit.Tree.t}
   def add_blob(tree, filename, content, mode) do
     {:ok, id} = Exit.ObjectDB.add_blob(content)
@@ -17,11 +24,14 @@ defmodule Exit.Tree do
   def read!(id) do
     tree = %Exit.Tree{id: id}
     {folder, filename} = String.split_at(id, 2)
-    filename = Path.join([".git", "objects", folder, filename])
+    filename = Path.join(["objects", folder, filename])
     contents = File.read!(filename) |> :zlib.uncompress
     [type_and_size, tree_contents] = String.split(contents, <<0>>, parts: 2)
 
-    size = String.split(type_and_size) |> List.last |> Integer.parse |> elem(0)
+    [type, size] = String.split(type_and_size)
+    {size, _} = Integer.parse(size)
+
+    unless type == "tree", do: raise Exit.InvalidTree
 
     ^size = byte_size(tree_contents)
     [contents_head | tree_contents] = tree_contents |> String.split(<<0>>)
